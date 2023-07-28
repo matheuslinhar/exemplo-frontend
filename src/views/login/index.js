@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import { Text, View, TextInput, TouchableOpacity } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 
 import api from "../../services/api";
 
 export default function App() {
 
-  const navigation= useNavigation();
+  const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState(""); 
+  const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
 
   const conectar = () => {
@@ -19,20 +19,17 @@ export default function App() {
     };
     api
       .post("/login", request)
-      .then((response) => { 
+      .then((response) => {
         navigation.navigate("home");
       })
       .catch((error) => {
-
-        setErro(error.response.data)
-        setInterval(()=>{
-          setErro("")
-        },3000)
-
+        setErro(error.response.data);
+        setTimeout(() => {
+          setErro("");
+        }, 3000);
       });
   };
   const criarConta = () => {
-   
     const request = {
       usuario: email,
       senha: senha,
@@ -40,85 +37,91 @@ export default function App() {
     api
       .post("/criar-conta", request)
       .then((response) => {
-
-        setErro("conta criada")
-        setInterval(()=>{
-          setErro("")
-        },3000)
-
+        setErro("Conta criada com sucesso!");
+        setTimeout(() => {
+          setErro("");
+        }, 3000);
       })
       .catch((error) => {
-
-        setErro(error.response.data)
-        setInterval(()=>{
-          setErro("")
-        },3000)
-        
+        setErro(error.response.data);
+        setTimeout(() => {
+          setErro("");
+        }, 3000);
       });
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "red",
-      }}
-    >
-      <Text>Fazer login</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Fazer login</Text>
       <TextInput
         value={email}
         onChangeText={(valor) => {
           setEmail(valor);
         }}
-        placeholder="email"
-        style={{
-          backgroundColor: "white",
-          height: "10%",
-          width: "80%",
-          borderRadius: 15,
-        }}
+        placeholder="E-mail"
+        style={styles.input}
       />
       <TextInput
         value={senha}
         onChangeText={(valor) => {
           setSenha(valor);
         }}
-        placeholder="senha"
-        style={{
-          backgroundColor: "white",
-          height: "10%",
-          width: "80%",
-          borderRadius: 15,
-        }}
+        placeholder="Senha"
+        secureTextEntry={true}
+        style={styles.input}
       />
-      <TouchableOpacity
-        onPress={conectar}
-        style={{
-          backgroundColor: "whitesmoke",
-          height: "10%",
-          width: "10%",
-          borderRadius: 10,
-        }}
-      >
-        <Text>enter</Text>
+      <TouchableOpacity onPress={conectar} style={styles.button}>
+        <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={criarConta}
-        style={{
-          backgroundColor: "whitesmoke",
-          height: "10%",
-          width: "10%",
-          borderRadius: 10,
-        }}
-      >
-        <Text>Criar Conta</Text>
+      <TouchableOpacity onPress={criarConta} style={styles.button}>
+        <Text style={styles.buttonText}>Criar Conta</Text>
       </TouchableOpacity>
-      <Text>
+      <Text style={styles.errorText}>
         {erro}
       </Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0", // Cinza smoke
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#008080", // Azul turquesa
+  },
+  input: {
+    backgroundColor: "white",
+    height: 50,
+    width: "80%",
+    paddingHorizontal: 20,
+    marginBottom: 10,
+    borderRadius: 15,
+  },
+  button: {
+    backgroundColor: "#dcdcdc", // Cinza claro
+    height: 50,
+    width: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 15,
+    marginBottom: 10,
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#008080", // Azul turquesa
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+    marginTop: 10,
+  },
+});
